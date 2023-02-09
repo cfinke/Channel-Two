@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Channel Two</title>
+		<style>
+			body {
+				background-color: #000;
+				overflow: hidden;
+			}
+
+			#tv {
+				z-index: 1;
+			}
+
+			#start {
+				position: relative;
+				z-index: 30;
+			}
+
+			#bug {
+				bottom: 176px;
+				display: none;
+				position: fixed;
+				right: 176px;
+				z-index: 40;
+			}
+
+			#overlay {
+				height: 100%;
+				left: 0;
+				position: fixed;
+				top: 0;
+				width: 100%;
+				z-index: 20;
+			}
+
+			#chyron {
+				bottom: 0%;
+				display: none;
+				left: 5%;
+				position: fixed;
+				z-index: 25;
+			}
+
+			#overlay.chyroned #chyron {
+				display: block;
+			}
+
+			#right-back {
+				background-color: #000;
+				background-image: url(assets/right-back.gif);
+				background-position: center center;
+				background-repeat: no-repeat;
+				background-size: contain;
+				height: 100%;
+				left: 0;
+				position: fixed;
+				top: 0;
+				width: 100%;
+				z-index: 45;
+			}
+
+			#start {
+				background-color: #000;
+				background-image: url(assets/click-to-start-animated.gif);
+				background-position: center center;
+				background-repeat: no-repeat;
+				background-size: contain;
+				cursor: pointer;
+				z-index: 50;
+			}
+
+			#chyron {
+				opacity: .90;
+			}
+
+			#chyron-back {
+				background-color:  #728b00;
+				border-radius: 1.5vh;
+				color: #f2f2f2;
+				display: inline-block;
+				font-family: Helvetica, sans-serif;
+				font-size: 2vh;
+				font-weight: bold;
+				height: 10vh;
+				left: 0;
+				padding: 2vh;
+				position: relative;
+				top: 0;
+				z-index: 24;
+			}
+
+			#chyron-banner {
+				background: #f2f2f2;
+				background: linear-gradient(90deg, rgba(242, 242, 242, 1) 80%, rgba(242, 242, 242, 0) 100%);
+				border-radius: 1.5vh 0 0 0;
+				color: #222;
+				font-family: Helvetica, sans-serif;
+				font-size: 3vh;
+				font-weight: bold;
+				height: 3vh;
+				left: 2vh;
+				min-width: 75vw;
+				padding: 2.5vh 2.5vh 2.2vh 2.5vh;
+				position: relative;
+				top: calc( -1 * ( 3vh + 2.5vh + 2.2vh ) ); /* height + top padding + bottom padding */
+				z-index: 25;
+			}
+		</style>
+		<link rel="icon" type="image/x-icon" href="assets/favicon.png" />
+	</head>
+	<body>
+		<div id="start" class="full-screen" title="Click to start"></div>
+		<video id="tv" class="full-screen"></video>
+		<img id="bug" src="assets/bug.png" />
+		<div id="overlay" class="full-screen">
+			<div id="chyron">
+				<div id="chyron-back">
+					You're watching
+				</div>
+				<div id="chyron-banner"></div>
+			</div>
+		</div>
+		<div id="right-back" class="full-screen"></div>
+		<script src="lib/cron.js"></script>
+		<script src="programming.js" id="programming"></script>
+		<script src="lib/vendor/jquery-3.6.3.min.js"></script>
+		<script src="channel-two.js"></script>
+	</body>
+</html>

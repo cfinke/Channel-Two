@@ -1,0 +1,40 @@
+shuffle=true
+
+# When nothing else is playing, show home movies.
+* * * * * /Media/Home Movies/
+
+shuffle=false
+
+ads=/Media/Ads/
+
+# Dad's Afternoon Block
+0 12 * * * https://example.com/noon-affirmations.mp4
+30 12 * * * /Media/TV/Yellowstone/
+
+ads=false
+
+# Kids Morning Block
+0 7 * * * /Media/TV/Backyardigans/
+30 7 * * * /Media/TV/Curious George/
+
+ads=/Media/Ads/
+
+# Mom's Afternoon Block
+0 15 * * * /Media/TV/Little House on the Prairie/
+0 16 * * * /Media/TV/When Calls the Heart/
+
+ads=false
+
+# Kids Afternoon Block
+0 17 * * * /Media/TV/Planet Earth/
+
+ads=/Media/Ads/
+
+# Grandma's Evening Block
+0 20 * * * /Media/TV/Green Acres/
+30 20 * * * /Media/TV/Gilligan's Island/
+0 21 * * * /Media/TV/The Beverly Hillbillies/
+30 21 * * * /Media/TV/Petticoat Junction/
+
+# Thursday night must-see TV
+0 20 * * 4 /Media/TV/The Office/
