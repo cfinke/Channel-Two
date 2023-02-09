@@ -176,6 +176,11 @@ jQuery( function ( $ ) {
 				if ( logLevel >= 2 ) console.log( "Couldn't find duration." );
 			} else {
 				if ( logLevel >= 2 ) console.log( "The duration of " + currentVideoSrc + " is " + duration + " seconds" );
+
+				// It makes life easier knowing the duration before a video plays, so save the duration in case we didn't pre-calculate it.
+				let durationSaved = saveDuration( currentVideoSrc, duration );
+
+				if ( logLevel >= 2 ) console.log( "Saved duration of " + currentVideoSrc + "; return values was " + durationSaved );
 			}
 		}
 
@@ -858,7 +863,88 @@ jQuery( function ( $ ) {
 			}
 		}
 
+		if ( 'durations' in localStorage ) {
+			let durations = JSON.parse( localStorage.durations );
+
+			if ( filePath in durations ) {
+				if ( logLevel >= 2 ) console.log( "Found duration in localStorage" );
+
+				return durations.filePath;
+			}
+		}
+
 		return false;
+	}
+
+	/**
+	 * Save the duration of a file that didn't have a stored duration in programming.js
+	 *
+	 * @param string filePath
+	 * @param float duration
+	 * @return Whether the operation succeeded.
+	 */
+	function saveDuration( filePath, duration ) {
+		if ( logLevel >= 2 ) console.log( "saveDuration( " + filePath + ", " + duration + " )" );
+
+		let durations;
+
+		if ( 'durations' in localStorage ) {
+			try {
+				durations = JSON.parse( localStorage.durations );
+			} catch ( error ) {
+				if ( logLevel >= 2 ) console.log( "localStorage.durations was malformed (" + localStorage.durations + ")", error );
+				durations = {};
+			}
+		} else {
+			durations = {};
+		}
+
+		durations[ filePath ] = duration;
+
+		try {
+			let stringDurations = JSON.stringify( durations );
+			localStorage.setItem( 'durations', stringDurations );
+		} catch ( error ) {
+			if ( logLevel >= 2 ) console.log( "Couldn't stringify durations", error );
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Remove any stored durations for files that are no longer in the programming indices.
+	 */
+	function purgeDurations() {
+		let durations;
+
+		if ( 'durations' in localStorage ) {
+			try {
+				durations = JSON.parse( localStorage.durations );
+			} catch ( error ) {
+				if ( logLevel >= 2 ) console.log( "localStorage.durations was malformed (" + localStorage.durations + ")", error );
+				durations = {};
+			}
+		} else {
+			durations = {};
+		}
+
+		for ( let filePath in durations ) {
+			if ( ! ( filePath in programming.ad_index ) && ! ( filePath in programming.content_index ) ) {
+				if ( logLevel >= 2 ) console.log( "Forgetting duration for " + filePath );
+
+				delete durations[ filePath ];
+			}
+		}
+
+		try {
+			let stringDurations = JSON.stringify( durations );
+			localStorage.setItem( 'durations', stringDurations );
+		} catch ( error ) {
+			if ( logLevel >= 2 ) console.log( "Couldn't stringify durations", error );
+		}
+
+		return;
 	}
 
 	function secondsLeftInCurrentProgram() {
@@ -962,6 +1048,9 @@ jQuery( function ( $ ) {
 
 		$( '#programming' ).remove();
 		document.body.appendChild(script);
+
+		// Clean up our stored durations to avoid using more space than we need.
+		purgeDurations();
 	}
 
 	// Add key bindings so you can use arrow keys to advance the current programming point.
@@ -1003,6 +1092,5 @@ jQuery( function ( $ ) {
 				console.log( e.which );
 			break;
 		}
-
 	} );
 } );

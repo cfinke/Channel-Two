@@ -195,7 +195,7 @@ function index_file( $file_path, &$index ) {
 	global $existing_programming;
 
 	if ( ! isset( $index[ $file_path ] ) ) {
-		$content_data = array();
+		$content_data = new stdClass();
 
 		$index_key = substr( $file_path, max( 0, strlen( $base ) - 1 ) );
 
@@ -206,7 +206,7 @@ function index_file( $file_path, &$index ) {
 		}
 
 		if ( $duration ) {
-			$content_data['duration'] = $duration;
+			$content_data->duration = $duration;
 		}
 
 		$index[ substr( $file_path, max( 0, strlen( $base ) - 1 ) ) ] = $content_data;
