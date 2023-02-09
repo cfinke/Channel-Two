@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * This script takes the cron-style schedule file and generates a JavaScript file that
+ * the web app can use.
+ *
+ * This is necessary because client-side JavaScript can't enumerate files in directories.
+ */
+
+/**
+ * Usage: php parse-schedule.php --schedule schedule.txt
+ *        By default, the script will read the existing programming.js file in order to
+ *        re-use any previously computed durations. To force it to re-examine every
+ *        file, add the optional --flush parameter.
+ */
+
 $options = getopt( '', array( 'schedule:', 'flush' ) );
 
 if ( ! isset( $options['schedule'] ) ) {
