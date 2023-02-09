@@ -96,27 +96,12 @@ jQuery( function ( $ ) {
 
 					if ( logLevel >= 2 ) console.log( nextContent + " would have played." );
 
-					let duration = getDuration( nextContent );
-
-					if ( duration && duration > ( ( minutesAgo * 60 ) + now.getSeconds() ) ) {
-						// Only use this cron if the program that will play is long enough to still be playing.
-
-						programmingQueue.push( {
-							src: nextContent + '#t=' + ( ( minutesAgo * 60 ) + now.getSeconds() ),
-							cron : cron
-						} );
-					} else {
-						if ( logLevel >= 2 ) console.log( "The content would have ended already (start time " + minutesAgo + " minutes ago, duration " + Math.floor( duration / 60 ) + " minutes)." );
-
-						if ( programming.schedule[cron].flags.ads ) {
-							if ( logLevel >= 2 ) console.log( "Scheduling commercial break instead." );
-							if ( logLevel >= 2 ) console.log( "(@todo)" );
-							//adBreak() requires tv.data('cron')
-							//if ( adBreak() ) {
-							//	return;
-							//}
-						}
-					}
+					// It doesn't matter if the file is long enough to reach the given duration.
+					// If it's not, it will end immediately and the 'ended' event will kick in.
+					programmingQueue.push( {
+						src: nextContent + '#t=' + ( ( minutesAgo * 60 ) + now.getSeconds() ),
+						cron : cron
+					} );
 
 					break timeLoop;
 				}
