@@ -193,6 +193,27 @@ jQuery( function ( $ ) {
 				if ( logLevel >= 2 ) console.log( "The duration of " + currentVideoSrc + " is " + duration + " seconds" );
 			}
 		}
+
+		if ( tv.attr( 'src' ).indexOf( '#t=' ) !== -1 ) {
+			let timestamp = parseFloat( tv.attr( 'src' ).split( '#t=' )[1] );
+
+			if ( timestamp < 0 ) {
+				if ( logLevel >= 2 ) console.log( "The timestamp is negative: " + timestamp );
+
+				// When given a negative timstamp, seek to that many seconds from the end.
+				let secondsFromEnd = timestamp * -1;
+
+				if ( tvElement.duration ) {
+					let seekToSeconds = tvElement.duration - secondsFromEnd;
+
+					if ( logLevel >= 2 ) console.log( "Seeking to " + seekToSeconds );
+
+					tvElement.currentTime = seekToSeconds;
+				} else {
+					if ( logLevel >= 2 ) console.log( "No duration available, so we can't seek." );
+				}
+			}
+		}
 	}, false );
 
 	/**
@@ -969,11 +990,8 @@ jQuery( function ( $ ) {
 				// Go to the previous episode that should have played, resuming with the same amount of time left in the current episode.
 				let previousContent = getPreviousContentFromCron( currentCron );
 
-				let previousEpisodeDuration = getDuration( previousContent );
-				let previousTimestamp = Math.max( 0, previousEpisodeDuration - secondsLeft );
-
 				programmingQueue.push( {
-					src: previousContent + '#t=' + previousTimestamp,
+					src: previousContent + '#t=' + ( -1 * secondsLeft ),
 					cron : currentCron
 				} );
 
@@ -984,11 +1002,8 @@ jQuery( function ( $ ) {
 				// Go to the next episode that should play, resuming with the same amount of time left in the current episode.
 				let nextContent = getNextContentFromCron( currentCron );
 
-				let nextEpisodeDuration = getDuration( nextContent );
-				let nextTimestamp = Math.max( 0, nextEpisodeDuration - secondsLeft );
-
 				programmingQueue.push( {
-					src: nextContent + '#t=' + nextTimestamp,
+					src: nextContent + '#t=' + ( -1 * secondsLeft ),
 					cron : currentCron
 				} );
 
