@@ -62,6 +62,9 @@ jQuery( function ( $ ) {
 	$( '#start' ).on( 'click', function () {
 		if ( logLevel >= 2 ) console.log( "#start.click()" );
 
+		// Periodically re-fetch the programming schedule in case new content has been added (or changed, or removed, or...)
+		setInterval( refreshProgramming, 5 * 60 * 1000 );
+
 		document.documentElement.requestFullscreen();
 
 		if ( logLevel >= 2 ) console.log( "Looking for content that should be playing." );
@@ -949,9 +952,6 @@ jQuery( function ( $ ) {
 		$( '#programming' ).remove();
 		document.body.appendChild(script);
 	}
-
-	// Periodically re-fetch the programming schedule in case new content has been added (or changed, or removed, or...)
-	setInterval( refreshProgramming, 1000 * 60 );
 
 	// Add key bindings so you can use arrow keys to advance the current programming point.
 
