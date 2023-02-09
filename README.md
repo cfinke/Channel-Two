@@ -4,7 +4,7 @@ Channel Two is a JavaScript/HTML5 application for running your own television ne
 
 ![](screenshots/in-browser.jpg)
 
-All you have to do is define the schedule in the [cron-style](https://en.wikipedia.org/wiki/Cron) `schedule.txt` file, run a PHP script, and then open the `channel-two.html` in a browser window. It will play your scheduled programming as long as you let it.
+All you have to do is define the schedule in the [cron-style](https://en.wikipedia.org/wiki/Cron) `schedule.txt` file, run a [PHP script](parse-schedule.php) to process the schedule and generate [some JavaScript](programming.js), and then open the `channel-two.html` in a browser window. It will play your scheduled programming as long as you let it.
 
 ## Requirements
 
