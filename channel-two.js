@@ -391,6 +391,11 @@ jQuery( function ( $ ) {
 
 				let adDuration = getDuration( randomAd );
 
+				if ( false === adDuration ) {
+					if ( logLevel >= 2 ) console.log( "No duration available for " + randomAd + "; assuming one minute." );
+					adDuration = 60;
+				}
+
 				if ( totalAdTime + adDuration > timeForAds ) {
 					if ( logLevel >= 2 ) console.log( "Finished scheduling " + totalAdTime + " seconds of ad time." );
 					break;
