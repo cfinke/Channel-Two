@@ -1,3 +1,5 @@
+# An example schedule file. See README.md for instructions on how to program Channel Two's schedule.
+
 shuffle=true
 
 # When nothing else is playing, show home movies.
