@@ -453,7 +453,7 @@ jQuery( function ( $ ) {
 		clearTimeout( nextProgrammingTimerId );
 
 		let now = new Date();
-		// Try again in a few seconds.
+
 		let secondsUntilNextMinute = ( 60 - now.getSeconds() );
 
 		if ( programmingQueue.length > 0 ) {
@@ -499,9 +499,20 @@ jQuery( function ( $ ) {
 			}
 		}
 
-		if ( cronForThisMinute ) {
-			let nextFileToPlay = getNextContentFromCron( cron );
+		let nextFileToPlay = false;
 
+		if ( cronForThisMinute ) {
+			nextFileToPlay = getNextContentFromCron( cron );
+
+			if ( tv.attr( 'src' ) && nextFileToPlay ) {
+				if ( tv.attr( 'src' ).indexOf( nextFileToPlay ) == 0 ) {
+					if ( logLevel >= 2 ) console.log( "Don't play the same file twice in a row in the same minute." );
+					nextFileToPlay = false;
+				}
+			}
+		}
+
+		if ( nextFileToPlay ) {
 			saveLastPlay( cron, nextFileToPlay );
 
 			play( nextFileToPlay );
