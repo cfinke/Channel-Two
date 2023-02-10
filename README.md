@@ -95,7 +95,7 @@ ads=false
 So in this example, ads will play after `Friends` and `Seinfeld` but not `Sesame Street`.
 
 ```
-ads=/path/to/AAds/
+ads=/path/to/Ads/
 
 0 12 * * * /path/to/TV Shows/Friends/
 30 12 * * * /path/to/TV Shows/Seinfeld/
