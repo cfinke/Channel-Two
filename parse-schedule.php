@@ -197,6 +197,15 @@ $schedule['schedule'] = array_reverse( $schedule['schedule'], true );
 ksort( $schedule['content_index'] );
 ksort( $schedule['ad_index'] );
 
+// Ensure that json_encode() formats these as objects.
+if ( empty( $schedule['content_index'] ) ) {
+	$schedule['content_index'] = new stdClass();
+}
+
+if ( empty( $schedule['ad_index'] ) ) {
+	$schedule['ad_index'] = new stdClass();
+}
+
 file_put_contents( "programming.js", 'var programming = ' . json_encode( $schedule, JSON_PRETTY_PRINT ) . ';' );
 
 echo "Done; programming schedule written to programming.js.\n";
