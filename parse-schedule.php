@@ -270,7 +270,7 @@ function get_duration( $file ){
 
 	preg_match( "/Duration: (.{2}):(.{2}):(.{2})(?:\.([^,]+))?,/", $ffmpeg_output, $duration );
 
-	if ( ! isset($duration[1] ) ) {
+	if ( ! isset( $duration[1] ) ) {
 		return false;
 	}
 
