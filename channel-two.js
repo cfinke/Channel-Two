@@ -561,45 +561,45 @@ jQuery( function ( $ ) {
 
 		tvElement.load();
 
-		tvElement.play().then( function () {
-			// For non-ad content, show a "now playing: " chyron.
-			if ( options.showNowPlaying && tv.data( 'cron' ) != 'ads' ) {
-				let displayName = path;
+		// For non-ad content, show a "now playing: " chyron.
+		if ( options.showNowPlaying && tv.data( 'cron' ) != 'ads' ) {
+			let displayName = path;
 
-				// Get rid of the timestamp.
-				let displayNameParts = displayName.split( '#' );
+			// Get rid of the timestamp.
+			let displayNameParts = displayName.split( '#' );
 
-				if ( displayNameParts.length > 1 ) {
-					displayNameParts.pop();
-				}
-
-				displayName = displayNameParts.join( '#' );
-
-				// Get rid of the extension.
-				displayNameParts = displayName.split( '.' );
-
-				if ( displayNameParts.length > 1 ) {
-					displayNameParts.pop();
-				}
-
-				displayName = displayNameParts.join( '.' );
-
-				// Get the filename part.
-				displayNameParts = displayName.split( '/' );
-				displayName = displayNameParts.pop();
-
-				displayName = displayName.replace( /\(.*?\)/, '' );
-				displayName = displayName.trim();
-
-				$( '#chyron-banner' ).text( displayName );
-				$( '#overlay' ).addClass( 'chyroned' );
-
-				chyronTimerId = setTimeout( function () {
-					$( '#overlay' ).animate( { opacity: 0 }, 1000, function () {
-						$( '#overlay' ).removeClass( 'chyroned' ).css( 'opacity', 1 );
-					} );
-				}, 5000 );
+			if ( displayNameParts.length > 1 ) {
+				displayNameParts.pop();
 			}
+
+			displayName = displayNameParts.join( '#' );
+
+			// Get rid of the extension.
+			displayNameParts = displayName.split( '.' );
+
+			if ( displayNameParts.length > 1 ) {
+				displayNameParts.pop();
+			}
+
+			displayName = displayNameParts.join( '.' );
+
+			// Get the filename part.
+			displayNameParts = displayName.split( '/' );
+			displayName = displayNameParts.pop();
+
+			displayName = displayName.replace( /\(.*?\)/, '' );
+			displayName = displayName.trim();
+
+			$( '#chyron-banner' ).text( displayName );
+			$( '#overlay' ).addClass( 'chyroned' );
+		}
+
+		tvElement.play().then( function () {
+			chyronTimerId = setTimeout( function () {
+				$( '#overlay' ).animate( { opacity: 0 }, 1000, function () {
+					$( '#overlay' ).removeClass( 'chyroned' ).css( 'opacity', 1 );
+				} );
+			}, 5000 );
 		} ).catch( function ( e ) {
 			console.log( "tvElement.play() exception: ", e );
 			queueNextProgramming();
