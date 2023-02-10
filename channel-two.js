@@ -1099,9 +1099,6 @@ jQuery( function ( $ ) {
 
 				queueNextProgramming();
 			break;
-			default:
-				console.log( e.which );
-			break;
 		}
 	} );
 } );
