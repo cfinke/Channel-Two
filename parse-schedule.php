@@ -170,7 +170,7 @@ foreach ( $lines as $line ) {
 foreach ( $schedule['schedule'] as $schedule_key => $schedule_data ) {
 	foreach ( $schedule_data['content'] as $content ) {
 		if ( isset( $content['file'] ) ) {
-			index_file( $content['file'], $schedule['content_index'] );
+			index_file( add_base( $content['file'] ), $schedule['content_index'] );
 		} else if ( isset( $content['dir'] ) ) {
 			$files_in_dir = files_in_dir_deep( add_base( $content['dir'] ) );
 
