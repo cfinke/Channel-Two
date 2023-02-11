@@ -349,7 +349,7 @@ jQuery( function ( $ ) {
 			secondsLeft < secondsUntil     // A program might be longer than the slot it's scheduled for.
 			&& secondsUntil > 0            // The next program might be beginning right now.
 			&& secondsLeft !== false
-			&& secondsLeft > 90            // And don't schedule anything in the last 90 seconds of a program.
+			&& ( secondsLeft > 90 || secondsLeft === 0 ) // And don't schedule anything in the last 90 seconds of a program, but right after is ok.
 		) {
 			let adsToQueue = 50;
 
