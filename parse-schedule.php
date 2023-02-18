@@ -247,7 +247,11 @@ function files_in_dir_deep( $dir ) {
 	foreach ( $files_and_dirs as $file_or_dir ) {
 		if ( file_exists( $file_or_dir ) ) {
 			if ( is_file( $file_or_dir ) ) {
-				$files[] = $file_or_dir;
+				$mime_type = mime_content_type( $file_or_dir );
+
+				if ( stripos( $mime_type, 'video/' ) === 0 ) {
+					$files[] = $file_or_dir;
+				}
 			} else {
 				$files = array_merge( $files, files_in_dir_deep( $file_or_dir ) );
 			}
