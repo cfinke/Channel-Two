@@ -39,6 +39,7 @@ $schedule = array(
 $flags = array(
 	'ads' => false,
 	'shuffle' => false,
+	'captions' => false,
 );
 
 $existing_programming = false;
@@ -95,7 +96,7 @@ foreach ( $lines as $line ) {
 	}
 
 
-	$valid_flags = array( 'ads', 'shuffle' );
+	$valid_flags = array( 'ads', 'shuffle', 'captions', );
 
 	if ( preg_match( '/^(' . join( '|', $valid_flags ) . ')=/', $line ) ) {
 		// Variable.
@@ -117,10 +118,11 @@ foreach ( $lines as $line ) {
 				}
 			break;
 			case 'shuffle':
+			case 'captions':
 				if ( strtolower( $parts[1] ) == 'true' ) {
-					$flags['shuffle'] = true;
+					$flags[ $parts[0] ] = true;
 				} else {
-					$flags['shuffle'] = false;
+					$flags[ $parts[0] ] = false;
 				}
 			break;
 		}
@@ -230,6 +232,18 @@ function index_file( $file_path, &$index ) {
 
 		if ( $duration ) {
 			$content_data->duration = $duration;
+		}
+
+		$possible_caption_files = array(
+			$file_path . ".vtt",
+			preg_replace( '/\.[^\.]+$/', '.vtt', $file_path ),
+		);
+
+		foreach ( $possible_caption_files as $possible_caption_file ) {
+			if ( file_exists( $possible_caption_file ) ) {
+				$content_data->captions = substr( $possible_caption_file, max( 0, strlen( $base ) - 1 ) );
+				break;
+			}
 		}
 
 		$index[ substr( $file_path, max( 0, strlen( $base ) - 1 ) ) ] = $content_data;

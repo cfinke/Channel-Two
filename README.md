@@ -134,6 +134,24 @@ then `good-morning.mp4` will play every day, even the 15th. It takes priority be
 
 will cause Channel Two to play `good-morning.mp4` the first day at 7am, then `bad-morning.mp4` the second day, then `good-morning.mp4` the third day, etc.
 
+## Closed Captions
+
+If you have WebVTT caption files for your videos, you can force them to be used as closed captions by adding the `captions=true` flag to a scheduling block:
+
+```
+captions=true
+0 9 * * * /path/to/play-me-with-captions.mp4
+
+captions=false
+0 11 * * * /path/to/no-captions-please.mp4
+```
+
+Channel Two will looks for a caption file in the same directory that is either the full filename plus ".vtt", or the filename with ".vtt" replacing the original file extension. For the example above, it would look for either `/path/to/play-me-with-captions.mp4.vtt` or `/path/to/play-me-with-captions.vtt`.
+
+While a program is playing, you can press the "c" to force captions to be turned on if they are not already enabled.
+
+Note that because of browser security policies, in order to use caption files, you must be running Channel Two through a Web server as described in the "Caveats" section below.
+
 ## Generating the JavaScript programming file
 
 Any time you modify `schedule.txt`, you'll need to re-generate the JavaScript schedule file. Do this:

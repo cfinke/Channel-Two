@@ -56,6 +56,12 @@ jQuery( function ( $ ) {
 	var chyronTimerId = null;
 
 	/**
+	 * Should captions be turned on regardless of the setting in the schedule? Press C to enable.
+	 * Note that there's no way to turn captions off if they've been enabled in the schedule file.
+	 */
+	var captionOverride = false;
+
+	/**
 	 * Webpages can't autoplay video or go full-screen without some interaction from the user,
 	 * so require a button to be clicked to kick things off.
 	 */
@@ -472,9 +478,8 @@ jQuery( function ( $ ) {
 
 			saveLastPlay( cron, nextFileToPlay );
 
-			play( nextFileToPlay );
-
 			tv.data( 'cron', cron );
+			play( nextFileToPlay );
 
 			// If this cron pattern matches every minute, this content should end if something else should be run.
 			if ( cron.indexOf( '* ' ) === 0 ) {
@@ -521,9 +526,8 @@ jQuery( function ( $ ) {
 		if ( nextFileToPlay ) {
 			saveLastPlay( cron, nextFileToPlay );
 
-			play( nextFileToPlay );
-
 			tv.data( 'cron', cron );
+			play( nextFileToPlay );
 
 			// If this cron pattern matches every minute, this content should end if something else should be run.
 			if ( cron.indexOf( '* ' ) === 0 ) {
@@ -563,7 +567,11 @@ jQuery( function ( $ ) {
 		$( '#right-back' ).hide();
 
 		tv.removeAttr( 'src' );
+		tv.empty();
+
 		tv.attr( 'src', path );
+		addCaptions( path );
+		setCaptionStatus();
 
 		tvElement.load();
 
@@ -612,6 +620,49 @@ jQuery( function ( $ ) {
 		} );
 	}
 
+	function addCaptions( path ) {
+		if ( logLevel >= 1 ) console.log( "addCaptions(" + path + ")" );
+
+		tv.empty();
+
+		let captions = getCaptions( path );
+
+		if ( captions ) {
+			let track = $( '<track/>' )
+				.attr( 'kind', 'captions' )
+				.attr( 'src', captions )
+				.attr( 'default', 'default' );
+
+			tv.append( track );
+
+			if ( logLevel >= 1 ) console.log( "added captions" );
+		} else {
+			if ( logLevel >= 1 ) console.log( "There were no captions to add." );
+		}
+	}
+
+	function setCaptionStatus() {
+		let currentCron = tv.data( 'cron' );
+
+		if ( 'textTracks' in tvElement ) {
+			if ( logLevel >= 2 ) console.log( "There are " + tvElement.textTracks.length + " text tracks." );
+
+			for ( let i = 0; i < tvElement.textTracks.length; i++ ) {
+				if ( captionOverride || ( currentCron in programming.schedule && programming.schedule[ currentCron ].flags.captions ) ) {
+					if ( logLevel >= 2 ) console.log( "Enabling text track " + i );
+
+					tvElement.textTracks[i].mode = 'showing';
+				} else {
+					if ( logLevel >= 2 ) console.log( "Disabling text track " + i );
+
+					tvElement.textTracks[i].mode = 'hidden';
+				}
+			}
+		} else {
+			if ( logLevel >= 1 ) console.log( "This browser does not support textTracks." );
+		}
+	}
+
 	/**
 	 * Given a cron pattern, find the next video that should be played.
 	 * For a file or URL, it's the file or URL. For a directory, it's the video that comes alphabetically, or a random one if shuffle is enabled.
@@ -655,7 +706,7 @@ jQuery( function ( $ ) {
 			}
 		}
 
-		console.log( "Potential files for " + cron + ": ", potentialFiles );
+		if ( logLevel >= 2 ) console.log( "Potential files for " + cron + ": ", potentialFiles );
 
 		if ( programming.schedule[cron].flags.shuffle ) {
 			if ( logLevel >= 2 ) console.log( "shuffle is enabled" );
@@ -751,7 +802,7 @@ jQuery( function ( $ ) {
 			}
 		}
 
-		console.log( "Potential files for " + cron + ": ", potentialFiles );
+		if ( logLevel >= 2 ) console.log( "Potential files for " + cron + ": ", potentialFiles );
 
 		if ( programming.schedule[cron].flags.shuffle ) {
 			if ( logLevel >= 2 ) console.log( "shuffle is enabled" );
@@ -887,6 +938,27 @@ jQuery( function ( $ ) {
 				if ( logLevel >= 2 ) console.log( "Found duration in localStorage" );
 
 				return durations.filePath;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * If a caption file is available for a file, return its path.
+	 *
+	 * @return int|bool The duration, or false if not available.
+	 */
+	function getCaptions( filePath ) {
+		if ( logLevel >= 2 ) console.log( "getCaptions(" + filePath + ")" );
+
+		if ( filePath in programming.content_index ) {
+			if ( 'captions' in programming.content_index[ filePath ] ) {
+				return programming.content_index[ filePath ].captions;
+			}
+		} else if ( filePath in programming.ad_index ) {
+			if ( 'captions' in programming.ad_index[ filePath ] ) {
+				return programming.ad_index[ filePath ].captions;
 			}
 		}
 
@@ -1078,32 +1150,41 @@ jQuery( function ( $ ) {
 		}
 
 		let currentCron = tv.data( 'cron' );
-		let secondsLeft = secondsLeftInCurrentProgram();
 
 		switch ( e.which ) {
 			case 37:
-				// Left arrow
-				// Go to the previous episode that should have played, resuming with the same amount of time left in the current episode.
-				let previousContent = getPreviousContentFromCron( currentCron );
+			case 39:
+				// Left or right arrow
+				let secondsLeft = secondsLeftInCurrentProgram();
+
+				let switchToThisContent;
+
+				if ( e.which == 37 ) {
+					// Go to the previous episode that should have played, resuming with the same amount of time left in the current episode.
+					switchToThisContent = getPreviousContentFromCron( currentCron );
+				} else {
+					// 39: right arrow
+					// Go to the next episode that should play, resuming with the same amount of time left in the current episode.
+
+					switchToThisContent = getNextContentFromCron( currentCron );
+				}
 
 				programmingQueue.push( {
-					src: previousContent + '#t=' + ( -1 * secondsLeft ),
+					src: switchToThisContent + '#t=' + ( -1 * secondsLeft ),
 					cron : currentCron
 				} );
 
 				queueNextProgramming();
 			break;
-			case 39:
-				// Right arrow
-				// Go to the next episode that should play, resuming with the same amount of time left in the current episode.
-				let nextContent = getNextContentFromCron( currentCron );
+			case 67:
+				// c for captions
+				if ( logLevel >= 2 ) console.log( "c keyup" );
 
-				programmingQueue.push( {
-					src: nextContent + '#t=' + ( -1 * secondsLeft ),
-					cron : currentCron
-				} );
-
-				queueNextProgramming();
+				captionOverride = ! captionOverride;
+				setCaptionStatus();
+			break;
+			default:
+				if ( logLevel >= 2 ) console.log( e.which );
 			break;
 		}
 	} );
