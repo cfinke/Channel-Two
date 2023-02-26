@@ -186,7 +186,7 @@ foreach ( $schedule['schedule'] as $schedule_key => $schedule_data ) {
 		$files_in_dir = files_in_dir_deep( add_base( $schedule_data['flags']['ads'] ) );
 
 		foreach ( $files_in_dir as $file_path ) {
-			index_file( $file_path, $schedule['ad_index'] );
+			index_file( $file_path, $schedule['ad_index'], true );
 		}
 	}
 }
@@ -215,7 +215,7 @@ echo "Done; programming schedule written to programming.js.\n";
 /**
  * Index a given file and its metadata.
  */
-function index_file( $file_path, &$index ) {
+function index_file( $file_path, &$index, $save_duration = false ) {
 	global $base;
 	global $existing_programming;
 
@@ -224,14 +224,16 @@ function index_file( $file_path, &$index ) {
 
 		$index_key = substr( $file_path, max( 0, strlen( $base ) - 1 ) );
 
-		$duration = existing_duration( $index_key );
+		if ( $save_duration ) {
+			$duration = existing_duration( $index_key );
 
-		if ( ! $duration ) {
-			$duration = get_duration( $file_path );
-		}
+			if ( ! $duration ) {
+				$duration = get_duration( $file_path );
+			}
 
-		if ( $duration ) {
-			$content_data->duration = $duration;
+			if ( $duration ) {
+				$content_data->duration = $duration;
+			}
 		}
 
 		$possible_caption_files = array(
