@@ -465,7 +465,7 @@ jQuery( function ( $ ) {
 		let secondsUntilNextMinute = ( 60 - now.getSeconds() );
 
 		if ( programmingQueue.length > 0 ) {
-			if ( logLevel >= 2 ) console.log( "Choosing from the programming queue." );
+			if ( logLevel >= 2 ) console.log( "Choosing from the programming queue:", programmingQueue );
 
 			let nextProgram = programmingQueue.shift();
 
