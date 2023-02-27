@@ -918,20 +918,26 @@ jQuery( function ( $ ) {
 		if ( logLevel >= 2 ) console.log( "getDuration(" + filePath + ")" );
 
 		if ( filePath in programming.content_index ) {
+			if ( logLevel >= 2 ) console.log( "Found " + filePath + " in content_index" );
+
 			if ( 'duration' in programming.content_index[ filePath ] ) {
 				return programming.content_index[ filePath ].duration;
+			} else {
+				if ( logLevel >= 2 ) console.log( "But didn't find duration in  programming.content_index[ filePath ]" );
 			}
-		} else if ( filePath in programming.ad_index ) {
+		}
+
+		if ( filePath in programming.ad_index ) {
 			if ( logLevel >= 2 ) console.log( "Found " + filePath + " in ad_index" );
 
 			if ( 'duration' in programming.ad_index[ filePath ] ) {
 				return programming.ad_index[ filePath ].duration;
 			} else {
-				if ( logLevel >= 2 ) console.log( "But Didn't find duration in  programming.ad_index[ filePath ]" );
+				if ( logLevel >= 2 ) console.log( "But didn't find duration in  programming.ad_index[ filePath ]" );
 			}
-		} else {
-			if ( logLevel >= 2 ) console.log( "Could not find " + filePath + " in content_index of ad_index" );
 		}
+
+		if ( logLevel >= 2 ) console.log( "Could not find " + filePath + " with duration in content_index or ad_index" );
 
 		if ( 'durations' in localStorage ) {
 			let durations = JSON.parse( localStorage.durations );
