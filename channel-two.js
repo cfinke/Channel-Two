@@ -935,9 +935,9 @@ jQuery( function ( $ ) {
 			let durations = JSON.parse( localStorage.durations );
 
 			if ( filePath in durations ) {
-				if ( logLevel >= 2 ) console.log( "Found duration in localStorage" );
+				if ( logLevel >= 2 ) console.log( "Found duration in localStorage: " + durations[ filePath ] );
 
-				return durations.filePath;
+				return durations[ filePath ];
 			}
 		}
 
