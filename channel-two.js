@@ -922,9 +922,15 @@ jQuery( function ( $ ) {
 				return programming.content_index[ filePath ].duration;
 			}
 		} else if ( filePath in programming.ad_index ) {
+			if ( logLevel >= 2 ) console.log( "Found " + filePath + " in ad_index" );
+
 			if ( 'duration' in programming.ad_index[ filePath ] ) {
 				return programming.ad_index[ filePath ].duration;
+			} else {
+				if ( logLevel >= 2 ) console.log( "But Didn't find duration in  programming.ad_index[ filePath ]" );
 			}
+		} else {
+			if ( logLevel >= 2 ) console.log( "Could not find " + filePath + " in content_index of ad_index" );
 		}
 
 		if ( 'durations' in localStorage ) {
