@@ -381,8 +381,6 @@ jQuery( function ( $ ) {
 
 			if ( logLevel >= 2 ) console.log( "Allotting " + timeForAds + " seconds for ads." );
 
-			pendingAds = [];
-
 			let adsThatMatch = [];
 
 			for ( let file in programming.ad_index ) {
