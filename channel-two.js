@@ -357,8 +357,6 @@ jQuery( function ( $ ) {
 			&& secondsLeft !== false
 			&& ( secondsLeft > 90 || secondsLeft === 0 ) // And don't schedule anything in the last 90 seconds of a program, but right after is ok.
 		) {
-			let adsToQueue = 50;
-
 			let timeForAds = secondsUntil - secondsLeft;
 			let maxAds = 1000;
 
