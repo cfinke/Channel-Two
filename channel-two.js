@@ -192,7 +192,7 @@ jQuery( function ( $ ) {
 				// It makes life easier knowing the duration before a video plays, so save the duration in case we didn't pre-calculate it.
 				let durationSaved = saveDuration( currentVideoSrc, duration );
 
-				if ( logLevel >= 2 ) console.log( "Saved duration of " + currentVideoSrc + "; return values was " + durationSaved );
+				if ( logLevel >= 2 ) console.log( "Saved duration of " + currentVideoSrc + "; return value was " + durationSaved );
 			}
 		}
 
