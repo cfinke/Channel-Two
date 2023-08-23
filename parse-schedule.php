@@ -45,12 +45,14 @@ $flags = array(
 $existing_programming = false;
 
 if ( ! isset( $options['flush'] ) ) {
-	$existing_programming_text = file_get_contents( 'programming.js' );
-	$existing_programming_text = preg_replace( '/^var programming = /', '', $existing_programming_text );
-	$existing_programming_text = preg_replace( '/;$/', '', $existing_programming_text );
+	if ( file_exists( './programming.js' ) ) {
+		$existing_programming_text = file_get_contents( './programming.js' );
+		$existing_programming_text = preg_replace( '/^var programming = /', '', $existing_programming_text );
+		$existing_programming_text = preg_replace( '/;$/', '', $existing_programming_text );
 
-	if ( $existing_programming_text ) {
-		$existing_programming = json_decode( $existing_programming_text );
+		if ( $existing_programming_text ) {
+			$existing_programming = json_decode( $existing_programming_text );
+		}
 	}
 }
 
