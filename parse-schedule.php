@@ -250,7 +250,7 @@ function index_file( $file_path, &$index, $save_duration = false ) {
 			}
 		}
 
-		$index[ substr( $file_path, max( 0, strlen( $base ) - 1 ) ) ] = $content_data;
+		$index[ $index_key ] = $content_data;
 	}
 }
 
