@@ -170,6 +170,9 @@ jQuery( function ( $ ) {
 			}
 		}
 
+		// @todo If there are less than ~30 seconds until the next non-wildcard programming,
+		// just show the "We'll be right back graphic.
+
 		// Find what to play next.
 		queueNextProgramming();
 	} );
