@@ -145,6 +145,12 @@ jQuery( function ( $ ) {
 	tv.on( 'error', function ( e ) {
 		console.log( e );
 
+		tv.removeAttr( 'src' );
+		tv.removeData( 'cron' );
+		tvElement.ended = true;
+
+		clearTimeout( commercialBreakTimerId );
+
 		queueNextProgramming();
 	} );
 
@@ -177,11 +183,13 @@ jQuery( function ( $ ) {
 		// Start watching for ad breaks after 90 seconds.
 		commercialBreakTimerId = setTimeout( watchForCommercialBreak, 90 * 1000 );
 
-		let currentVideoSrc = tv.attr( 'src' ).split( '#' )[0];
+		let currentVideoSrc = tv.attr( 'src' ).split( '#t=' )[0];
 
 		if ( ! currentVideoSrc ) {
 			if ( logLevel >= 2 ) console.log( "Couldn't find video source." );
 		} else {
+			currentVideoSrc = decodePathParts( currentVideoSrc );
+
 			let duration = tvElement.duration;
 
 			if ( ! duration ) {
@@ -425,7 +433,11 @@ jQuery( function ( $ ) {
 
 				programmingQueue.push( {
 					src: randomAd,
-					cron : 'ads'
+					cron : 'ads',
+					secondsUntil : secondsUntil,
+					secondsLeft : secondsLeft,
+					timeForAds : timeForAds,
+					now : new Date()
 				} );
 			}
 		} else {
@@ -438,7 +450,7 @@ jQuery( function ( $ ) {
 
 			// Add the rest of the current program to the queue.
 			programmingQueue.push( {
-				src : tv.attr( 'src' ).split( '#t=' )[0] + '#t=' + tvElement.currentTime,
+				src : decodePathParts( tv.attr( 'src' ).split( '#t=' )[0] ) + '#t=' + tvElement.currentTime,
 				cron : currentCron
 			} );
 
@@ -565,7 +577,7 @@ jQuery( function ( $ ) {
 		tv.removeAttr( 'src' );
 		tv.empty();
 
-		tv.attr( 'src', path );
+		tv.attr( 'src', encodePathParts( path ) );
 		addCaptions( path );
 		setCaptionStatus();
 
@@ -576,13 +588,13 @@ jQuery( function ( $ ) {
 			let displayName = path;
 
 			// Get rid of the timestamp.
-			let displayNameParts = displayName.split( '#' );
+			let displayNameParts = displayName.split( '#t=' );
 
 			if ( displayNameParts.length > 1 ) {
 				displayNameParts.pop();
 			}
 
-			displayName = displayNameParts.join( '#' );
+			displayName = displayNameParts.join( '#t=' );
 
 			// Get rid of the extension.
 			displayNameParts = displayName.split( '.' );
@@ -611,7 +623,15 @@ jQuery( function ( $ ) {
 				} );
 			}, 5000 );
 		} ).catch( function ( e ) {
+			// Probably a file that can't be loaded or doesn't exist.
 			console.log( "tvElement.play() exception: ", e );
+
+			tv.removeAttr( 'src' );
+			tv.removeData( 'cron' );
+			tvElement.ended = true;
+
+			clearTimeout( commercialBreakTimerId );
+
 			queueNextProgramming();
 		} );
 	}
@@ -626,7 +646,7 @@ jQuery( function ( $ ) {
 		if ( captions ) {
 			let track = $( '<track/>' )
 				.attr( 'kind', 'captions' )
-				.attr( 'src', captions )
+				.attr( 'src', encodePathParts( captions ) )
 				.attr( 'default', 'default' );
 
 			tv.append( track );
@@ -1148,6 +1168,48 @@ jQuery( function ( $ ) {
 
 		// Clean up our stored durations to avoid using more space than we need.
 		purgeDurations();
+	}
+
+	/**
+	 * Encode the individual directories and filenames in a path without encoding the slashes.
+	 */
+	function encodePathParts( path ) {
+		let pathAndTime = path.split( '#t=' );
+		let pathParts = pathAndTime[0].split( '/' );
+		pathParts.forEach( function ( value, idx ) {
+			pathParts[ idx ] = encodeURIComponent( value );
+		} );
+
+		let returnValue = pathParts.join( '/' );
+
+		// If there was a timestamp, add it back in.
+		if ( pathAndTime[1] ) {
+			returnValue += '#t=' + pathAndTime[1];
+		}
+
+		console.log( path + " encoded is " + returnValue );
+
+		return returnValue;
+	}
+
+	/**
+	 * Decode the individual directories and filenames in a path without encoding the slashes.
+	 */
+	function decodePathParts( path ) {
+		let pathAndTime = path.split( '#t=' );
+		let pathParts = pathAndTime[0].split( '/' );
+		pathParts.forEach( function ( value, idx ) {
+			pathParts[ idx ] = decodeURIComponent( value );
+		} );
+
+		let returnValue = pathParts.join( '/' );
+
+		// If there was a timestamp, add it back in.
+		if ( pathAndTime[1] ) {
+			returnValue += '#t=' + pathAndTime[1];
+		}
+
+		return returnValue;
 	}
 
 	// Add key bindings so you can use arrow keys to advance the current programming point.
